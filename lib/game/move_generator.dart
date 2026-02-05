@@ -32,6 +32,10 @@ class MoveGenerator {
         if (piece.pieceType == PieceType.queen) {
           _generateQueenMoves(state, square.position, piece, moves);
         }
+
+        if (piece.pieceType == PieceType.king) {
+          _generateKingMoves(state, square.position, piece, moves);
+        }
       }
     }
 
