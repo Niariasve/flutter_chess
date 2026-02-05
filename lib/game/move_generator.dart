@@ -230,4 +230,34 @@ class MoveGenerator {
     _generateBishopMoves(state, from, queen, moves);
     _generateRookMoves(state, from, queen, moves);
   }
+
+  void _generateKingMoves(
+    GameState state,
+    Position from,
+    Piece king,
+    List<Move> moves,
+  ) {
+    final List<int> dRow = [-1, -1, -1, 0, 0, 1, 1, 1];
+    final List<int> dCol = [-1, 0, 1, -1, 1, -1, 0, 1];
+
+    for (int i = 0; i < 8; i++) {
+      final Position position = Position(
+        row: from.row + dRow[i],
+        col: from.col + dCol[i],
+      );
+
+      if (!position.isValid) continue;
+
+      final Piece? targetPiece = state.board.pieceAt(position);
+
+      if (targetPiece == null) {
+        moves.add(Move(from: from, to: position));
+        continue;
+      }
+
+      if (targetPiece.pieceColor != king.pieceColor) {
+        moves.add(Move(from: from, to: position, capturedPiece: targetPiece));
+      }
+    }
+  }
 }
