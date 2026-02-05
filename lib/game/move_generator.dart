@@ -16,7 +16,7 @@ class MoveGenerator {
         if (piece.pieceType == PieceType.pawn) {
           _generatePawnMoves(state, square.position, piece, moves);
         }
-        
+
         if (piece.pieceType == PieceType.knight) {
           _generateKnightMoves(state, square.position, piece, moves);
         }
@@ -131,6 +131,43 @@ class MoveGenerator {
 
       if (targetPiece.pieceColor != knight.pieceColor) {
         moves.add(Move(from: from, to: position, capturedPiece: targetPiece));
+      }
+    }
+  }
+
+  void _generateBishopMoves(
+    GameState state,
+    Position from,
+    Piece bishop,
+    List<Move> moves,
+  ) {
+    final List<int> dRow = [-1, -1, 1, 1];
+    final List<int> dCol = [-1, 1, -1, 1];
+
+    for (int i = 0; i < 4; i++) {
+      int c = 1;
+
+      while (true) {
+        final Position position = Position(
+          row: from.row + (c * dRow[i]),
+          col: from.col + (c * dCol[i]),
+        );
+
+        if (!position.isValid) break;
+
+        Piece? targetPiece = state.board.pieceAt(position);
+
+        if (targetPiece == null) {
+          moves.add(Move(from: from, to: position));
+          c++;
+          continue;
+        }
+
+        if (targetPiece.pieceColor != bishop.pieceColor) {
+          moves.add(Move(from: from, to: position, capturedPiece: targetPiece));
+        }
+
+        break;
       }
     }
   }
