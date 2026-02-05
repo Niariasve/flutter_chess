@@ -28,6 +28,10 @@ class MoveGenerator {
         if (piece.pieceType == PieceType.rook) {
           _generateRookMoves(state, square.position, piece, moves);
         }
+
+        if (piece.pieceType == PieceType.queen) {
+          _generateQueenMoves(state, square.position, piece, moves);
+        }
       }
     }
 
@@ -215,5 +219,15 @@ class MoveGenerator {
         break;
       }
     }
+  }
+
+  void _generateQueenMoves(
+    GameState state,
+    Position from,
+    Piece queen,
+    List<Move> moves,
+  ) {
+    _generateBishopMoves(state, from, queen, moves);
+    _generateRookMoves(state, from, queen, moves);
   }
 }
