@@ -20,6 +20,10 @@ class MoveGenerator {
         if (piece.pieceType == PieceType.knight) {
           _generateKnightMoves(state, square.position, piece, moves);
         }
+
+        if (piece.pieceType == PieceType.bishop) {
+          _generateBishopMoves(state, square.position, piece, moves);
+        }
       }
     }
 
