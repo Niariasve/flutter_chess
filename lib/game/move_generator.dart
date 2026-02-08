@@ -263,5 +263,47 @@ class MoveGenerator {
         moves.add(Move(from: from, to: position, capturedPiece: targetPiece));
       }
     }
+
+    // Castling logic
+    if (king.hasMoved) return;
+
+    final int castlingRow = state.turn == PieceColor.white ? 7 : 0;
+
+    // short castling
+    final Piece? rightRook = state.board.pieceAt(
+      Position(row: castlingRow, col: 7),
+    );
+
+    if (rightRook != null &&
+        rightRook.pieceType == PieceType.rook &&
+        !rightRook.hasMoved &&
+        state.board.pieceAt(Position(row: castlingRow, col: 5)) == null &&
+        state.board.pieceAt(Position(row: castlingRow, col: 6)) == null) {
+      moves.add(
+        Move(
+          from: from,
+          to: Position(row: castlingRow, col: 6),
+        ),
+      );
+    }
+
+    // long castling
+    final Piece? leftRook = state.board.pieceAt(
+      Position(row: castlingRow, col: 0),
+    );
+
+    if (leftRook != null &&
+        leftRook.pieceType == PieceType.rook &&
+        !leftRook.hasMoved &&
+        state.board.pieceAt(Position(row: castlingRow, col: 1)) == null &&
+        state.board.pieceAt(Position(row: castlingRow, col: 2)) == null &&
+        state.board.pieceAt(Position(row: castlingRow, col: 3)) == null) {
+      moves.add(
+        Move(
+          from: from,
+          to: Position(row: castlingRow, col: 2),
+        ),
+      );
+    }
   }
 }

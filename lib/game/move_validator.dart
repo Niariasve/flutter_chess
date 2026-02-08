@@ -10,6 +10,38 @@ class MoveValidator {
     GameEngine engine = GameEngine();
     MoveGenerator generator = MoveGenerator();
 
+    final Piece? piece = state.board.pieceAt(move.from);
+
+    final bool isCastling =
+        piece != null &&
+        piece.pieceType == PieceType.king &&
+        (move.to.col - move.from.col).abs() == 2;
+
+    if (isCastling) {
+      final PieceColor kingColor = piece.pieceColor;
+
+      if (isInCheck(state, kingColor)) {
+        return false;
+      }
+
+      final int direction = move.to.col > move.from.col ? 1 : -1;
+
+      final Position intermediate = Position(
+        row: move.from.row,
+        col: move.from.col + direction,
+      );
+
+      engine.applyMove(state, Move(from: move.from, to: intermediate));
+
+      final bool inCheckIntermediate = isInCheck(state, kingColor);
+
+      engine.undoMove(state);
+
+      if (inCheckIntermediate) {
+        return false;
+      }
+    }
+
     engine.applyMove(state, move);
 
     final PieceColor movedColor = state.turn == PieceColor.white
@@ -60,7 +92,9 @@ class MoveValidator {
     // King position not found
     if (kingPosition == null) return false;
 
-    final PieceColor enemy = color == PieceColor.white ? PieceColor.black : PieceColor.white;
+    final PieceColor enemy = color == PieceColor.white
+        ? PieceColor.black
+        : PieceColor.white;
 
     final PieceColor originalTurn = state.turn;
     state.turn = enemy;
