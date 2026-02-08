@@ -5,6 +5,7 @@ import 'package:flutter_chess/game/move_validator.dart';
 import 'package:flutter_chess/models/game_state.dart';
 import 'package:flutter_chess/models/move.dart';
 import 'package:flutter_chess/models/piece.dart';
+import 'package:flutter_chess/ui/chess_square.dart';
 
 class ChessBoard extends StatefulWidget {
   const ChessBoard({super.key});
@@ -40,59 +41,16 @@ class _ChessBoardState extends State<ChessBoard> {
           final int col = index % 8;
           final Position position = Position(row: row, col: col);
 
-          return _buildSquare(position);
+          return ChessSquare(
+            position: position,
+            piece: gameState.board.pieceAt(position),
+            isSelected: position == selectedPosition,
+            isLegalTarget: legalMoves.any((m) => m.to == position),
+            onTap: () => _onSquareTap(position),
+          );
         },
       ),
     );
-  }
-
-  Widget _buildSquare(Position position) {
-    final bool isLight = (position.row + position.col) % 2 == 0;
-
-    final Piece? piece = gameState.board.pieceAt(position);
-
-    final bool isSelected = position == selectedPosition;
-
-    final bool isLegalTarget = legalMoves.any((m) => m.to == position);
-
-    Color color = isLight ? Colors.brown[200]! : Colors.brown[600]!;
-
-    if (isSelected) {
-      color = Colors.yellow;
-    } else if (isLegalTarget) {
-      color = Colors.green;
-    }
-
-    return GestureDetector(
-      onTap: () => _onSquareTap(position),
-      child: Container(
-        color: color,
-        child: piece != null ? Center(child: _buildPiece(piece)) : null,
-      ),
-    );
-  }
-
-  Widget _buildPiece(Piece piece) {
-    final String symbol = _pieceSymbol(piece);
-
-    return Text(symbol, style: const TextStyle(fontSize: 32));
-  }
-
-  String _pieceSymbol(Piece piece) {
-    switch (piece.pieceType) {
-      case PieceType.king:
-        return piece.pieceColor == PieceColor.white ? '♔' : '♚';
-      case PieceType.queen:
-        return piece.pieceColor == PieceColor.white ? '♕' : '♛';
-      case PieceType.rook:
-        return piece.pieceColor == PieceColor.white ? '♖' : '♜';
-      case PieceType.bishop:
-        return piece.pieceColor == PieceColor.white ? '♗' : '♝';
-      case PieceType.knight:
-        return piece.pieceColor == PieceColor.white ? '♘' : '♞';
-      case PieceType.pawn:
-        return piece.pieceColor == PieceColor.white ? '♙' : '♟';
-    }
   }
 
   void _onSquareTap(Position position) {
