@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/core/position.dart';
+import 'package:flutter_chess/models/move.dart';
 import 'package:flutter_chess/models/piece.dart';
 import 'package:flutter_chess/ui/chess_piece.dart';
 
@@ -7,7 +8,7 @@ class ChessSquare extends StatelessWidget {
   final Position position;
   final Piece? piece;
   final bool isSelected;
-  final bool isLegalTarget;
+  final Move? move;
   final VoidCallback onTap;
 
   const ChessSquare({
@@ -15,26 +16,59 @@ class ChessSquare extends StatelessWidget {
     required this.position,
     required this.piece,
     required this.isSelected,
-    required this.isLegalTarget,
+    required this.move,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool isLight = (position.row + position.col) % 2 == 0;
-    Color color = isLight ? Colors.brown[200]! : Colors.brown[600]!;
+
+    const Color lightSquare = Color(0xFFeeeed2);
+    const Color darkSquare = Color(0xFF769656);
+
+    // Color background = isLight ? Colors.brown[200]! : Colors.brown[600]!;
+    Color background = isLight ? lightSquare : darkSquare;
 
     if (isSelected) {
-      color = Colors.yellow;
-    } else if (isLegalTarget) {
-      color = Colors.green;
+      background = const Color(0xFFf6f669);
     }
 
     return GestureDetector(
       onTap: onTap,
+      child: Stack(
+        children: [
+          Container(color: background),
+          if (move != null) _buildMoveIndicator(),
+          if (piece != null)
+            Center(
+              child: FractionallySizedBox(
+                widthFactor: 0.85,
+                heightFactor: 0.85,
+                child: ChessPiece(piece: piece!),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMoveIndicator() {
+    final bool isCapture = move!.capturedPiece != null;
+
+    return Center(
       child: Container(
-        color: color,
-        child: piece != null ? Center(child: ChessPiece(piece: piece!)) : null,
+        width: isCapture ? 48 : 25,
+        height: isCapture ? 48 : 25,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isCapture
+              ? Colors.transparent
+              : Colors.black.withValues(alpha: 0.3),
+          border: isCapture
+              ? Border.all(color: Colors.black.withValues(alpha: 0.4), width: 4)
+              : null,
+        ),
       ),
     );
   }

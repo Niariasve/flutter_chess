@@ -40,12 +40,16 @@ class _ChessBoardState extends State<ChessBoard> {
           final int row = index ~/ 8;
           final int col = index % 8;
           final Position position = Position(row: row, col: col);
+          final Move? moveToHere = legalMoves
+              .where((m) => m.to == position)
+              .cast<Move?>()
+              .firstWhere((m) => m != null, orElse: () => null);
 
           return ChessSquare(
             position: position,
             piece: gameState.board.pieceAt(position),
             isSelected: position == selectedPosition,
-            isLegalTarget: legalMoves.any((m) => m.to == position),
+            move: moveToHere,
             onTap: () => _onSquareTap(position),
           );
         },
