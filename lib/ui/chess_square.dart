@@ -11,6 +11,12 @@ class ChessSquare extends StatelessWidget {
   final Move? move;
   final VoidCallback onTap;
 
+  //0xAARRGGBB
+  static const Color lightSquare = Color(0xFFeeeed2);
+  static const Color darkSquare = Color(0xFF769656);
+  static const Color selectedSquare = Color(0xFFf6f669);
+  static const Color checkedSquareColor = Color(0xFFf9031e);
+
   const ChessSquare({
     super.key,
     required this.position,
@@ -24,14 +30,10 @@ class ChessSquare extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLight = (position.row + position.col) % 2 == 0;
 
-    const Color lightSquare = Color(0xFFeeeed2);
-    const Color darkSquare = Color(0xFF769656);
-
-    // Color background = isLight ? Colors.brown[200]! : Colors.brown[600]!;
     Color background = isLight ? lightSquare : darkSquare;
 
     if (isSelected) {
-      background = const Color(0xFFf6f669);
+      background = selectedSquare;
     }
 
     return GestureDetector(
