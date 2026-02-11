@@ -11,9 +11,13 @@ class Board {
   Board() {
     for (int row = 0; row < _rowNum; row++) {
       List<Square> squareRow = [];
-      for (int col = 0; col < _colNum; col++ ) {
-        squareRow.add(Square(position: Position(row: row, col: col)));
-      } 
+      for (int col = 0; col < _colNum; col++) {
+        squareRow.add(
+          Square(
+            position: Position(row: row, col: col),
+          ),
+        );
+      }
       squares.add(squareRow);
     }
   }
@@ -28,5 +32,22 @@ class Board {
 
   void setPiece(Position position, Piece? piece) {
     squareAt(position).piece = piece;
+  }
+
+  Position findKing(PieceColor color) {
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 8; col++) {
+        final position = Position(row: row, col: col);
+        final piece = pieceAt(position);
+
+        if (piece != null &&
+            piece.pieceType == PieceType.king &&
+            piece.pieceColor == color) {
+          return position;
+        }
+      }
+    }
+
+    throw Exception("King not found.");
   }
 }
