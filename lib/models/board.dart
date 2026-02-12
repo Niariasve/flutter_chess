@@ -34,7 +34,7 @@ class Board {
     squareAt(position).piece = piece;
   }
 
-  Position findKing(PieceColor color) {
+  Position? findKing(PieceColor color) {
     for (int row = 0; row < 8; row++) {
       for (int col = 0; col < 8; col++) {
         final position = Position(row: row, col: col);
@@ -48,6 +48,6 @@ class Board {
       }
     }
 
-    throw Exception("King not found.");
+    return null;
   }
 }

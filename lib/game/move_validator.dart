@@ -20,7 +20,7 @@ class MoveValidator {
     if (isCastling) {
       final PieceColor kingColor = piece.pieceColor;
 
-      if (isInCheck(state, kingColor)) {
+      if (state.isInCheck(kingColor)) {
         return false;
       }
 
@@ -33,7 +33,7 @@ class MoveValidator {
 
       engine.applyMove(state, Move(from: move.from, to: intermediate));
 
-      final bool inCheckIntermediate = isInCheck(state, kingColor);
+      final bool inCheckIntermediate = state.isInCheck(kingColor);
 
       engine.undoMove(state);
 
@@ -48,7 +48,7 @@ class MoveValidator {
         ? PieceColor.black
         : PieceColor.white;
 
-    Position? kingPosition = _findKingPosition(state, movedColor);
+    Position? kingPosition = state.findKingPosition(movedColor);
 
     // King position not found
     if (kingPosition == null) {
@@ -82,59 +82,5 @@ class MoveValidator {
     }
 
     return legalMoves;
-  }
-
-  static bool isInCheck(GameState state, PieceColor color) {
-    final generator = MoveGenerator();
-
-    Position? kingPosition = _findKingPosition(state, color);
-
-    // King position not found
-    if (kingPosition == null) return false;
-
-    final PieceColor enemy = color == PieceColor.white
-        ? PieceColor.black
-        : PieceColor.white;
-
-    final PieceColor originalTurn = state.turn;
-    state.turn = enemy;
-
-    final enemyMoves = generator.generateMoves(state);
-
-    state.turn = originalTurn;
-
-    for (final move in enemyMoves) {
-      if (move.to == kingPosition) return true;
-    }
-
-    return false;
-  }
-
-  static bool isCheckmate(GameState state, PieceColor color) {
-    if (!isInCheck(state, color)) return false;
-
-    final PieceColor originalTurn = state.turn;
-    state.turn = color;
-
-    final legalMoves = MoveValidator.getLegalMoves(state);
-
-    state.turn = originalTurn;
-
-    return legalMoves.isEmpty;
-  }
-
-  static Position? _findKingPosition(GameState state, PieceColor color) {
-    for (final row in state.board.squares) {
-      for (final square in row) {
-        final Piece? piece = square.piece;
-
-        if (piece != null &&
-            piece.pieceType == PieceType.king &&
-            piece.pieceColor == color) {
-          return square.position;
-        }
-      }
-    }
-    return null;
   }
 }

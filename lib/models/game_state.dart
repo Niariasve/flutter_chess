@@ -1,4 +1,6 @@
 import 'package:flutter_chess/core/position.dart';
+import 'package:flutter_chess/game/move_generator.dart';
+import 'package:flutter_chess/game/move_validator.dart';
 import 'package:flutter_chess/models/board.dart';
 import 'package:flutter_chess/models/move.dart';
 import 'package:flutter_chess/models/piece.dart';
@@ -69,5 +71,69 @@ class GameState {
       Position(row: row, col: 7),
       Piece(pieceType: PieceType.rook, pieceColor: color),
     );
+  }
+
+  PieceColor oppositeColor(PieceColor color) {
+    return color == PieceColor.white ? PieceColor.black : PieceColor.white;
+  }
+
+  bool isInCheck(PieceColor color) {
+    final generator = MoveGenerator();
+
+    Position? kingPosition = findKingPosition(color);
+
+    // King position not found
+    if (kingPosition == null) return false;
+
+    final PieceColor enemy = color == PieceColor.white
+        ? PieceColor.black
+        : PieceColor.white;
+
+    final PieceColor originalTurn = turn;
+    turn = enemy;
+
+    final enemyMoves = generator.generateMoves(this);
+
+    turn = originalTurn;
+
+    for (final move in enemyMoves) {
+      if (move.to == kingPosition) return true;
+    }
+
+    return false;
+  }
+
+  Position? findKingPosition(PieceColor color) {
+    for (final row in board.squares) {
+      for (final square in row) {
+        final Piece? piece = square.piece;
+
+        if (piece != null &&
+            piece.pieceType == PieceType.king &&
+            piece.pieceColor == color) {
+          return square.position;
+        }
+      }
+    }
+    return null;
+  }
+
+  bool isCheckmate(GameState state, PieceColor color) {
+    if (!state.isInCheck(color)) return false;
+
+    final PieceColor originalTurn = state.turn;
+    state.turn = color;
+
+    final legalMoves = MoveValidator.getLegalMoves(state);
+
+    state.turn = originalTurn;
+
+    return legalMoves.isEmpty;
+  }
+
+  Position? checkedKingPosition() {
+    if (!isInCheck(turn)) return null;
+
+    return findKingPosition(turn);
   }
 }

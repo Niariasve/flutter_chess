@@ -28,6 +28,8 @@ class _ChessBoardState extends State<ChessBoard> {
 
   @override
   Widget build(BuildContext context) {
+    final Position? checkedPosition = gameState.checkedKingPosition();
+
     return AspectRatio(
       aspectRatio: 1,
       child: GridView.builder(
@@ -49,6 +51,7 @@ class _ChessBoardState extends State<ChessBoard> {
             position: position,
             piece: gameState.board.pieceAt(position),
             isSelected: position == selectedPosition,
+            isCheck: position == checkedPosition,
             move: moveToHere,
             onTap: () => _onSquareTap(position),
           );

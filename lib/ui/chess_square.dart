@@ -8,6 +8,7 @@ class ChessSquare extends StatelessWidget {
   final Position position;
   final Piece? piece;
   final bool isSelected;
+  final bool isCheck;
   final Move? move;
   final VoidCallback onTap;
 
@@ -22,6 +23,7 @@ class ChessSquare extends StatelessWidget {
     required this.position,
     required this.piece,
     required this.isSelected,
+    required this.isCheck,
     required this.move,
     required this.onTap,
   });
@@ -34,6 +36,10 @@ class ChessSquare extends StatelessWidget {
 
     if (isSelected) {
       background = selectedSquare;
+    }
+
+    if (isCheck) {
+      background = checkedSquareColor;
     }
 
     return GestureDetector(
